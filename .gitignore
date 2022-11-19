@@ -1,5 +1,6 @@
 # Visual Studio 2015 user specific files
 .vs/
+.idea/
 
 # Compiled Object files
 *.slo
@@ -59,6 +60,12 @@ Build/*/**
 
 # Don't ignore icon files in Build
 !Build/**/*.ico
+
+# Ignore files in Developers folder
+Content/*/Developers/*
+
+# Ignore the game Build
+GameBuild/*
 
 # Built data for maps
 *_BuiltData.uasset
