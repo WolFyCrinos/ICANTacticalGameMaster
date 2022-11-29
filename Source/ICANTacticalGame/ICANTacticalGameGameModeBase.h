@@ -13,5 +13,4 @@ UCLASS()
 class ICANTACTICALGAME_API AICANTacticalGameGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
 };

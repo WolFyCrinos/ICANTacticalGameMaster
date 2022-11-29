@@ -3,4 +3,4 @@
 #include "ICANTacticalGame.h"
 #include "Modules/ModuleManager.h"
 
-IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, ICANTacticalGame, "ICANTacticalGame" );
+IMPLEMENT_PRIMARY_GAME_MODULE(FDefaultGameModuleImpl, ICANTacticalGame, "ICANTacticalGame");
