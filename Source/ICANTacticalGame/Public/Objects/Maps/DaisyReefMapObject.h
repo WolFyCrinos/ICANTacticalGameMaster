@@ -11,10 +11,10 @@ class ADaisyReefMapElement;
 UENUM()
 enum class ETileOrientation : uint8
 {
-	HG,
-	HD,
-	BG,
-	BD
+	Default,
+	MirrorX,
+	MirrorY,
+	MirrorXY
 };
 
 USTRUCT(BlueprintType)
@@ -38,47 +38,37 @@ struct FMapProperties
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties")
 	UTexture2D* TextureMap = nullptr;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector2DInt GridOffset;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin=0))
-	int MapHeight;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ClampMin=0))
-	int SeaLevel;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FVector MapLocation;
 };
 
 USTRUCT(BlueprintType)
-struct FMapElement
+struct FElementListByTagAndLocation
 {
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
+	FName Tag;
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FColor ColorNeededToSpawnCube;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ShowTreeView))
 	TSubclassOf<ADaisyReefMapElement> MapElement = nullptr;
-};
 
-USTRUCT(BlueprintType)
-struct FMapTileElement
-{
-	GENERATED_BODY()
+	/**
+	 * @brief Warning ! Textures are Read TopLeft -> BottomRight
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
+	FVector2DInt TextureLocation = {0, 0};
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FColor ColorNeededToSpawnCube;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties")
-	UTexture2D* TextureMapMask = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ETileOrientation TileOrientation;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ShowTreeView))
-	TSubclassOf<ADaisyReefMapElement> MapElement = nullptr;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
+	FVector2DInt TextureSize = {0, 0};
 };
 
 /**
@@ -93,12 +83,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapProperties")
 	FMapProperties MapProperties;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties", meta=(ShowTreeView))
-	TSubclassOf<ADaisyReefMapElement> SingleMapElements;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties")
-	TArray<FMapElement> MapElementsByTexture;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties")
-	TArray<FMapTileElement> MapElementsByTile;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties", meta=(DeprecatedProperty))
+	TArray<FElementListByTagAndLocation> MapElementsByTile;
 };

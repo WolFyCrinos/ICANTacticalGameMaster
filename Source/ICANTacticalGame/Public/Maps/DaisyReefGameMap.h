@@ -10,6 +10,21 @@
 
 class UDaisyReefMapObject;
 
+ICANTACTICALGAME_API DECLARE_LOG_CATEGORY_EXTERN(LogGameMap, Display, All);
+
+USTRUCT(BlueprintType)
+struct FColorListByLocation
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
+	FColor Color;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
+	FVector2DInt Location;
+};
+
 UCLASS(Blueprintable, BlueprintType)
 class ICANTACTICALGAME_API ADaisyReefGameMap : public AActor
 {
@@ -19,16 +34,13 @@ public:
 	// Sets default values for this actor's properties
 	ADaisyReefGameMap();
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TactureMap", meta=(ShowTreeView))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap", meta=(ShowTreeView))
 	TSubclassOf<UDaisyReefMapObject> MapProperty;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TactureMap")
-	TArray<FColor> ColorList;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
+	TArray<ADaisyReefMapElement*> WallMapElementsSpawned;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TactureMap")
-	TArray<ADaisyReefMapElement*> MapElementsSpawned;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TactureMap")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
 	TArray<ADaisyReefMapElement*> FloorMapElementsSpawned;
 
 protected:
@@ -36,14 +48,27 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual TArray<FColor> GenerateColorMapList(const UTexture2D* TextureMap, ETileOrientation TileOrientation);
+	virtual TArray<FColorListByLocation> GenerateColorMapList(FMapProperties MapProperties,
+	                                                          const FElementListByTagAndLocation
+	                                                          ElementListByTagAndLocation);
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual TArray<ADaisyReefMapElement*> GenerateGridBySingleMapElement(const UTexture2D* TextureMap, const TSubclassOf<ADaisyReefMapElement> MapElement, const float HeightLocation);
+	virtual TArray<ADaisyReefMapElement*> GenerateGridMapElementByTexture(
+		TArray<FColorListByLocation> ColorList, const FMapProperties MapProperties,
+		FElementListByTagAndLocation ElementListByTagAndLocation,
+		const float HeightLocation, const FName TargetTag);
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual TArray<ADaisyReefMapElement*> GenerateGridMapElementByTexture(const UTexture2D* TextureMap, const TArray<FColor> Colors, const TArray<FMapElement> MapPropertyClass, const float HeightLocation);
+	virtual TArray<ADaisyReefMapElement*> GenerateTileMapElementByTexture(
+		TArray<FColorListByLocation> ColorList, const FMapProperties MapProperties,
+		FElementListByTagAndLocation ElementListByTagAndLocation,
+		const float HeightLocation, const FName TargetTag);
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual TArray<ADaisyReefMapElement*> GenerateTileMapElementByTexture(const UTexture2D* TextureMap, const TArray<FColor> Colors, const TArray<FMapTileElement> MapPropertyClass, const float HeightLocation);
+	virtual FElementListByTagAndLocation GetElementListByTagAndLocation(
+		TArray<FElementListByTagAndLocation> ElementListByTagAndLocations, const FName TargetTag,
+		const bool bUseRandom = false);
+
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual FVector GetNewPosition(const FVector TargetLocation, const FVector CurrentLocation, const FVector2DInt PixelLocation, const FVector2DInt Size, const FVector2DInt GridOffset);
 };

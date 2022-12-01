@@ -1,11 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 using UnrealBuildTool;
-using System.Collections.Generic;
 
 public class ICANTacticalGameEditorTarget : TargetRules
 {
-	public ICANTacticalGameEditorTarget( TargetInfo Target) : base(Target)
+	public ICANTacticalGameEditorTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
