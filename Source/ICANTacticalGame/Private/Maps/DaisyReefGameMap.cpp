@@ -31,9 +31,8 @@ void ADaisyReefGameMap::BeginPlay()
 					if (ElementListByTagAndLocation.MapElement != nullptr)
 					{
 						FloorMapElementsSpawned = GenerateTileMapElementByTexture(
-							GenerateColorMapList(TextureMap, MapProperty.GetDefaultObject()->MapProperties,
-							                     ElementListByTagAndLocation),
-							MapProperty.GetDefaultObject()->MapProperties, ElementListByTagAndLocation, Tag, Location);
+							GenerateColorMapList(TextureMap), MapProperty.GetDefaultObject()->MapProperties,
+							ElementListByTagAndLocation, Tag, Location);
 					}
 				}
 			}
@@ -41,10 +40,7 @@ void ADaisyReefGameMap::BeginPlay()
 	}
 }
 
-TArray<FColorListByLocation> ADaisyReefGameMap::GenerateColorMapList(UTexture2D* Texture,
-                                                                     const FMapProperties MapProperties,
-                                                                     const FElementList
-                                                                     ElementList)
+TArray<FColorListByLocation> ADaisyReefGameMap::GenerateColorMapList(UTexture2D* Texture)
 {
 	UE_LOG(LogGameMap, Display, TEXT("Generate new ColorList with %s"), *Texture->GetName());
 

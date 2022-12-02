@@ -8,7 +8,7 @@
 
 class ADaisyReefMapElement;
 
-UENUM()
+UENUM(BlueprintType)
 enum class ETileOrientation : uint8
 {
 	Default,
