@@ -18,58 +18,60 @@ ADaisyReefGameMap::ADaisyReefGameMap()
 // Called when the game starts or when spawned
 void ADaisyReefGameMap::BeginPlay()
 {
-	if (MapProperty.GetDefaultObject()->MapProperties.TextureMap != nullptr)
+	for (const auto [TextureTag, TextureMap] : MapProperty.GetDefaultObject()->MapProperties.TextureMap)
 	{
-		FElementListByTagAndLocation ElementListByTagAndLocation = GetElementListByTagAndLocation(
-			MapProperty.GetDefaultObject()->MapElementsByTile, "Floor", false);
-		if (ElementListByTagAndLocation.MapElement != nullptr)
+		if (TextureMap != nullptr)
 		{
-			FloorMapElementsSpawned = GenerateGridMapElementByTexture(
-				GenerateColorMapList(MapProperty.GetDefaultObject()->MapProperties, ElementListByTagAndLocation),
-				MapProperty.GetDefaultObject()->MapProperties, ElementListByTagAndLocation
-				,
-				0, "Floor");
-		}
-
-		ElementListByTagAndLocation = GetElementListByTagAndLocation(MapProperty.GetDefaultObject()->MapElementsByTile,
-		                                                             "Wall", true);
-		if (ElementListByTagAndLocation.MapElement != nullptr)
-		{
-			WallMapElementsSpawned = GenerateTileMapElementByTexture(
-				GenerateColorMapList(MapProperty.GetDefaultObject()->MapProperties,
-				                     ElementListByTagAndLocation), MapProperty.GetDefaultObject()->MapProperties,
-				ElementListByTagAndLocation,
-				100, "Wall");
+			for (const auto [Tag, Location] : MapProperty.GetDefaultObject()->MapProperties.TagsToSpawn)
+			{
+				if (TextureTag == Tag)
+				{
+					FElementList ElementListByTagAndLocation = GetElementListByTagAndLocation(
+						MapProperty.GetDefaultObject()->MapElementsByTile, Tag, Tag == "Floor" ? false : true);
+					if (ElementListByTagAndLocation.MapElement != nullptr)
+					{
+						FloorMapElementsSpawned = GenerateTileMapElementByTexture(
+							GenerateColorMapList(TextureMap, MapProperty.GetDefaultObject()->MapProperties,
+							                     ElementListByTagAndLocation),
+							MapProperty.GetDefaultObject()->MapProperties, ElementListByTagAndLocation, Tag, Location);
+					}
+				}
+			}
 		}
 	}
 }
 
-TArray<FColorListByLocation> ADaisyReefGameMap::GenerateColorMapList(const FMapProperties MapProperties,
-                                                                     const FElementListByTagAndLocation
-                                                                     ElementListByTagAndLocation)
+TArray<FColorListByLocation> ADaisyReefGameMap::GenerateColorMapList(UTexture2D* Texture,
+                                                                     const FMapProperties MapProperties,
+                                                                     const FElementList
+                                                                     ElementList)
 {
-	UE_LOG(LogGameMap, Display, TEXT("Generate new ColorList with %s"), *MapProperties.TextureMap->GetName());
+	UE_LOG(LogGameMap, Display, TEXT("Generate new ColorList with %s"), *Texture->GetName());
 
 	TArray<FColorListByLocation> NewColorList = {};
 
-	const TextureCompressionSettings OldCompressionSettings = MapProperties.TextureMap->CompressionSettings;
-	const TextureMipGenSettings OldMipGenSettings = MapProperties.TextureMap->MipGenSettings;
-	const bool OldSRGB = MapProperties.TextureMap->SRGB;
+	const TextureCompressionSettings OldCompressionSettings = Texture->CompressionSettings;
+	const TextureMipGenSettings OldMipGenSettings = Texture->MipGenSettings;
+	const bool OldSRGB = Texture->SRGB;
 
-	MapProperties.TextureMap->CompressionSettings = TC_VectorDisplacementmap;
-	MapProperties.TextureMap->MipGenSettings = TMGS_NoMipmaps;
-	MapProperties.TextureMap->SRGB = false;
-	MapProperties.TextureMap->UpdateResource();
+	Texture->CompressionSettings = TC_VectorDisplacementmap;
+	Texture->MipGenSettings = TMGS_NoMipmaps;
+	Texture->SRGB = 0;
+	Texture->UpdateResource();
 
-	const auto PlatformDataTexture = MapProperties.TextureMap->GetPlatformData();
+	const auto PlatformDataTexture = Texture->GetPlatformData();
 
-	const FColor* FormattedImageData = static_cast<const FColor*>(PlatformDataTexture->Mips[0].BulkData.LockReadOnly());
+	FColor* FormattedImageData = nullptr;
+	PlatformDataTexture->Mips[0].BulkData.GetCopy(reinterpret_cast<void**>(&FormattedImageData));
 
-	for (int32 y = 0; y < MapProperties.TextureMap->GetSizeY(); y++)
+	const int32 TextSizeY = Texture->GetSizeY();
+	const int32 TextSizeX = Texture->GetSizeX();
+
+	for (int32 y = 0; y < TextSizeY; y++)
 	{
-		for (int32 x = 0; x < MapProperties.TextureMap->GetSizeX(); x++)
+		for (int32 x = 0; x < TextSizeX; x++)
 		{
-			if (const FColor PixelColor = FormattedImageData[y * MapProperties.TextureMap->GetSizeX() + x]; PixelColor.A
+			if (const FColor PixelColor = FormattedImageData[y * Texture->GetSizeX() + x]; PixelColor.A
 				== 255)
 			{
 				FColorListByLocation NewColorByLocation;
@@ -80,52 +82,17 @@ TArray<FColorListByLocation> ADaisyReefGameMap::GenerateColorMapList(const FMapP
 		}
 	}
 
-	PlatformDataTexture->Mips[0].BulkData.Unlock();
-
-	MapProperties.TextureMap->CompressionSettings = OldCompressionSettings;
-	MapProperties.TextureMap->MipGenSettings = OldMipGenSettings;
-	MapProperties.TextureMap->SRGB = OldSRGB;
-	MapProperties.TextureMap->UpdateResource();
+	Texture->CompressionSettings = OldCompressionSettings;
+	Texture->MipGenSettings = OldMipGenSettings;
+	Texture->SRGB = OldSRGB;
+	Texture->UpdateResource();
 
 	return NewColorList;
 }
 
-TArray<ADaisyReefMapElement*> ADaisyReefGameMap::GenerateGridMapElementByTexture(
-	TArray<FColorListByLocation> ColorList, const FMapProperties MapProperties,
-	FElementListByTagAndLocation ElementListByTagAndLocation, const float HeightLocation, const FName TargetTag)
-{
-	TArray<ADaisyReefMapElement*> NewMapElementsTexture = {};
-
-	FActorSpawnParameters SpawnInfo;
-	SpawnInfo.Instigator = GetInstigator();
-	SpawnInfo.ObjectFlags |= RF_Transient; // We never want to save player controllers into a map
-	SpawnInfo.bDeferConstruction = true;
-
-	auto [Tag, ColorNeededToSpawnCube, MapElement, TextureLocation, TextureSize] = ElementListByTagAndLocation;
-
-	for (auto [Color, Location] : ColorList)
-	{
-		if (Color == ColorNeededToSpawnCube && ((Location.WidthX >= TextureLocation.WidthX && Location.WidthX <
-			TextureLocation.WidthX + TextureSize.WidthX) && (Location.WidthY >= TextureLocation.WidthY && Location.
-			WidthY < TextureLocation.WidthY + TextureSize.WidthY)) && Tag == TargetTag)
-		{
-			FVector NewElementLocation = GetNewPosition(MapProperties.MapLocation, FVector(Location.WidthX, Location.WidthY, HeightLocation), {TextureLocation.WidthX, TextureLocation.WidthY}, {TextureSize.WidthX, TextureSize.WidthY}, {MapProperties.GridOffset.WidthX, MapProperties.GridOffset.WidthY});
-			if (ADaisyReefMapElement* NewMapElement = GetWorld()->SpawnActor<ADaisyReefMapElement>(
-				MapElement, NewElementLocation, FRotator::ZeroRotator, SpawnInfo))
-			{
-				UGameplayStatics::FinishSpawningActor(NewMapElement,
-				                                      FTransform(FRotator::ZeroRotator, NewElementLocation));
-				NewMapElementsTexture.Add(NewMapElement);
-			}
-		}
-	}
-
-	return NewMapElementsTexture;
-}
-
 TArray<ADaisyReefMapElement*> ADaisyReefGameMap::GenerateTileMapElementByTexture(
 	TArray<FColorListByLocation> ColorList, const FMapProperties MapProperties,
-	FElementListByTagAndLocation ElementListByTagAndLocation, const float HeightLocation, const FName TargetTag)
+	FElementList ElementList, const FName TargetTag, const FVector Location)
 {
 	TArray<ADaisyReefMapElement*> NewMapElementsTexture = {};
 
@@ -134,19 +101,23 @@ TArray<ADaisyReefMapElement*> ADaisyReefGameMap::GenerateTileMapElementByTexture
 	SpawnInfo.ObjectFlags |= RF_Transient; // We never want to save player controllers into a map
 	SpawnInfo.bDeferConstruction = true;
 
-	auto [Tag, ColorNeededToSpawnCube, MapElement, TextureLocation, TextureSize] = ElementListByTagAndLocation;
+	auto [Tag, ColorNeededToSpawnCube, MapElement, TextureLocation, TextureSize] = ElementList;
 
-	for (auto [Color, Location] : ColorList)
+	for (auto [Color, ColorLocation] : ColorList)
 	{
-		if (Color == ColorNeededToSpawnCube && ((Location.WidthX >=
-			TextureLocation.WidthX && Location.WidthX <
-			TextureLocation.WidthX + TextureSize.WidthX) && (Location.WidthY >=
-			TextureLocation.WidthY && Location.WidthY <
+		if (Color == ColorNeededToSpawnCube && ((ColorLocation.WidthX >=
+			TextureLocation.WidthX && ColorLocation.WidthX <
+			TextureLocation.WidthX + TextureSize.WidthX) && (ColorLocation.WidthY >=
+			TextureLocation.WidthY && ColorLocation.WidthY <
 			TextureLocation.WidthY + TextureSize.WidthY)))
 		{
-			FVector NewElementLocation = GetNewPosition(MapProperties.MapLocation, FVector(Location.WidthX, Location.WidthY, HeightLocation), {TextureLocation.WidthX, TextureLocation.WidthY}, {TextureSize.WidthX, TextureSize.WidthY}, {MapProperties.GridOffset.WidthX, MapProperties.GridOffset.WidthY});
+			FVector NewElementLocation = GetNewPosition(
+				Location, FVector(ColorLocation.WidthX, ColorLocation.WidthY, Location.Z),
+				{TextureLocation.WidthX, TextureLocation.WidthY}, {TextureSize.WidthX, TextureSize.WidthY}, {
+					MapProperties.GridOffset.WidthX, MapProperties.GridOffset.WidthY
+				});
 			if (ADaisyReefMapElement* NewMapElement = GetWorld()->SpawnActor<ADaisyReefMapElement>(
-				ElementListByTagAndLocation.MapElement, NewElementLocation, FRotator::ZeroRotator, SpawnInfo))
+				ElementList.MapElement, NewElementLocation, FRotator::ZeroRotator, SpawnInfo))
 			{
 				UGameplayStatics::FinishSpawningActor(NewMapElement,
 				                                      FTransform(
@@ -154,18 +125,28 @@ TArray<ADaisyReefMapElement*> ADaisyReefGameMap::GenerateTileMapElementByTexture
 				NewMapElementsTexture.Add(NewMapElement);
 			}
 		}
+		/** DEBUG */
+		else if (Color != ColorNeededToSpawnCube)
+		{
+			UE_LOG(LogGameMap, Warning, TEXT("Error Color with %s != %s"), *Color.ToString(),
+			       *ColorNeededToSpawnCube.ToString());
+		}
+		else if (Color.A != 255)
+		{
+			UE_LOG(LogGameMap, Warning, TEXT("Error Alpha Color with %s"), *Color.ToString());
+		}
 	}
 
 	return NewMapElementsTexture;
 }
 
-FElementListByTagAndLocation ADaisyReefGameMap::GetElementListByTagAndLocation(
-	TArray<FElementListByTagAndLocation> ElementListByTagAndLocations, const FName TargetTag, const bool bUseRandom)
+FElementList ADaisyReefGameMap::GetElementListByTagAndLocation(
+	TArray<FElementList> ElementList, const FName TargetTag, const bool bUseRandom)
 {
-	TArray<FElementListByTagAndLocation> SelectedElements = {};
-	FElementListByTagAndLocation NewElement;
+	TArray<FElementList> SelectedElements = {};
+	FElementList NewElement;
 
-	for (auto SelectedElement : ElementListByTagAndLocations)
+	for (auto SelectedElement : ElementList)
 	{
 		if (SelectedElement.Tag == TargetTag)
 		{
@@ -180,12 +161,18 @@ FElementListByTagAndLocation ADaisyReefGameMap::GetElementListByTagAndLocation(
 		       : SelectedElements[0];
 }
 
-FVector ADaisyReefGameMap::GetNewPosition(const FVector TargetLocation, const FVector CurrentLocation, const FVector2DInt PixelLocation, const FVector2DInt Size, const FVector2DInt GridOffset)
+FVector ADaisyReefGameMap::GetNewPosition(const FVector TargetLocation, const FVector CurrentLocation,
+                                          const FVector2DInt PixelLocation, const FVector2DInt Size,
+                                          const FVector2DInt GridOffset)
 {
 	const FVector2d HalfSize = FVector2d(Size.WidthX / 2.0f, Size.WidthY / 2.0f);
-	const float X = FMath::GetMappedRangeValueClamped(FVector2d(PixelLocation.WidthX, PixelLocation.WidthX + Size.WidthX), FVector2d(TargetLocation.X - HalfSize.X, TargetLocation.X + HalfSize.X), CurrentLocation.X) * GridOffset.WidthX;
-	const float Y = FMath::GetMappedRangeValueClamped(FVector2d(PixelLocation.WidthY, PixelLocation.WidthY + Size.WidthY), FVector2d(TargetLocation.Y - HalfSize.Y, TargetLocation.Y + HalfSize.Y), CurrentLocation.Y) * GridOffset.WidthY;
+	const float X = FMath::GetMappedRangeValueClamped(
+		FVector2d(PixelLocation.WidthX, PixelLocation.WidthX + Size.WidthX),
+		FVector2d(TargetLocation.X - HalfSize.X, TargetLocation.X + HalfSize.X), CurrentLocation.X) * GridOffset.WidthX;
+	const float Y = FMath::GetMappedRangeValueClamped(
+		FVector2d(PixelLocation.WidthY, PixelLocation.WidthY + Size.WidthY),
+		FVector2d(TargetLocation.Y - HalfSize.Y, TargetLocation.Y + HalfSize.Y), CurrentLocation.Y) * GridOffset.WidthY;
 	const float Z = CurrentLocation.Z;
-	
+
 	return FVector(X, Y, Z);
 }

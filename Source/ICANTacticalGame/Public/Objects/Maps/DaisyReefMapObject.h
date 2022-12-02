@@ -31,23 +31,49 @@ public:
 };
 
 USTRUCT(BlueprintType)
+struct FNameAndLocation
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceUnits="units", ClampMin=0))
+	FName Tag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceUnits="units", ClampMin=0))
+	FVector Location;
+};
+
+USTRUCT(BlueprintType)
+struct FTextureByTag
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceUnits="units", ClampMin=0))
+	FName Tag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties")
+	UTexture2D* TextureMap = nullptr;
+};
+
+USTRUCT(BlueprintType)
 struct FMapProperties
 {
 	GENERATED_BODY()
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties")
-	UTexture2D* TextureMap = nullptr;
+	TArray<FTextureByTag> TextureMap;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FVector2DInt GridOffset;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector MapLocation;
+	TArray<FNameAndLocation> TagsToSpawn = {};
 };
 
 USTRUCT(BlueprintType)
-struct FElementListByTagAndLocation
+struct FElementList
 {
 	GENERATED_BODY()
 
@@ -84,5 +110,5 @@ public:
 	FMapProperties MapProperties;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties", meta=(DeprecatedProperty))
-	TArray<FElementListByTagAndLocation> MapElementsByTile;
+	TArray<FElementList> MapElementsByTile;
 };

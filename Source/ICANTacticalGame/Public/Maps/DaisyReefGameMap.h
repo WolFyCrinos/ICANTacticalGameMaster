@@ -48,27 +48,23 @@ protected:
 	virtual void BeginPlay() override;
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual TArray<FColorListByLocation> GenerateColorMapList(FMapProperties MapProperties,
-	                                                          const FElementListByTagAndLocation
-	                                                          ElementListByTagAndLocation);
-
-	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual TArray<ADaisyReefMapElement*> GenerateGridMapElementByTexture(
-		TArray<FColorListByLocation> ColorList, const FMapProperties MapProperties,
-		FElementListByTagAndLocation ElementListByTagAndLocation,
-		const float HeightLocation, const FName TargetTag);
+	virtual TArray<FColorListByLocation> GenerateColorMapList(UTexture2D* Texture,
+	                                                          const FMapProperties MapProperties,
+	                                                          const FElementList
+	                                                          ElementList);
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual TArray<ADaisyReefMapElement*> GenerateTileMapElementByTexture(
 		TArray<FColorListByLocation> ColorList, const FMapProperties MapProperties,
-		FElementListByTagAndLocation ElementListByTagAndLocation,
-		const float HeightLocation, const FName TargetTag);
+		FElementList ElementList, const FName TargetTag, const FVector Location);
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual FElementListByTagAndLocation GetElementListByTagAndLocation(
-		TArray<FElementListByTagAndLocation> ElementListByTagAndLocations, const FName TargetTag,
+	virtual FElementList GetElementListByTagAndLocation(
+		TArray<FElementList> ElementList, const FName TargetTag,
 		const bool bUseRandom = false);
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual FVector GetNewPosition(const FVector TargetLocation, const FVector CurrentLocation, const FVector2DInt PixelLocation, const FVector2DInt Size, const FVector2DInt GridOffset);
+	virtual FVector GetNewPosition(const FVector TargetLocation, const FVector CurrentLocation,
+	                               const FVector2DInt PixelLocation, const FVector2DInt Size,
+	                               const FVector2DInt GridOffset);
 };
