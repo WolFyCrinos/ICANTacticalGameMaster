@@ -27,7 +27,7 @@ void ADaisyReefGameMap::BeginPlay()
 				if (TextureTag == Tag)
 				{
 					FElementList ElementListByTagAndLocation = GetElementListByTagAndLocation(
-						MapProperty.GetDefaultObject()->MapElementsByTile, Tag, Tag == "Floor" ? false : true);
+						MapProperty.GetDefaultObject()->MapElementsByTile, Tag, (Tag == "Floor" || Tag == "GPE" || Tag == "PlayerStart") ? false : true);
 					if (ElementListByTagAndLocation.MapElement != nullptr)
 					{
 						FloorMapElementsSpawned = GenerateTileMapElementByTexture(
