@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "DaisyReefMapElement.generated.h"
 
-UCLASS()
+UCLASS(BlueprintType, Blueprintable)
 class ICANTACTICALGAME_API ADaisyReefMapElement : public AActor
 {
 	GENERATED_BODY()
@@ -22,4 +22,17 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual void InitElement(const bool bSetIsWalkable, const FVector SetLocation);
+
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual bool GetIsWalkable();
+
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual FVector GetElementLocation();
+
+private:
+	bool bIsWalkable;
+	FVector Location;
 };

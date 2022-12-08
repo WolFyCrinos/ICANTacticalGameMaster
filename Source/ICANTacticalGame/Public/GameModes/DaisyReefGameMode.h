@@ -6,7 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "DaisyReefGameMode.generated.h"
 
-class ADaisyReefGameMap;
+class ADaisyReefMapManager;
 
 /**
  * 
@@ -18,17 +18,17 @@ class ICANTACTICALGAME_API ADaisyReefGameMode : public AGameModeBase
 public:
 	/** Class of GameMap, used to generate map on Start */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes, meta=(ShowTreeView))
-	TSubclassOf<ADaisyReefGameMap> GameMapClass = nullptr;
+	TSubclassOf<ADaisyReefMapManager> GameMapClass = nullptr;
 
 	UFUNCTION(BlueprintCallable, Category="DaisyReef|GameMapClass")
-	ADaisyReefGameMap* GetGameMap() const;
+	ADaisyReefMapManager* GetGameMap() const;
 
 protected:
 	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
 
-	virtual ADaisyReefGameMap* SpawnGameMapCommon(const FVector& SpawnLocation, const FRotator& SpawnRotation,
-	                                              TSubclassOf<ADaisyReefGameMap> GameMap);
+	virtual ADaisyReefMapManager* SpawnGameMapCommon(const FVector& SpawnLocation, const FRotator& SpawnRotation,
+	                                              TSubclassOf<ADaisyReefMapManager> GameMap);
 
 private:
-	ADaisyReefGameMap* SpawnedGameMap = nullptr;
+	ADaisyReefMapManager* SpawnedGameMap = nullptr;
 };

@@ -21,3 +21,19 @@ void ADaisyReefMapElement::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+void ADaisyReefMapElement::InitElement(const bool bSetIsWalkable, const FVector SetLocation)
+{
+	bIsWalkable = bSetIsWalkable;
+	Location = SetLocation;
+}
+
+bool ADaisyReefMapElement::GetIsWalkable()
+{
+	return bIsWalkable;
+}
+
+FVector ADaisyReefMapElement::GetElementLocation()
+{
+	return Location;
+}

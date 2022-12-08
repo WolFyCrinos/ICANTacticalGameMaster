@@ -2,7 +2,7 @@
 
 #include "GameModes/DaisyReefGameMode.h"
 #include "Kismet/GameplayStatics.h"
-#include "Maps/DaisyReefGameMap.h"
+#include "Maps/DaisyReefMapManager.h"
 
 ADaisyReefGameMode::ADaisyReefGameMode(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer.DoNotCreateDefaultSubobject(TEXT("Sprite")))
@@ -11,7 +11,7 @@ ADaisyReefGameMode::ADaisyReefGameMode(const FObjectInitializer& ObjectInitializ
 }
 
 
-ADaisyReefGameMap* ADaisyReefGameMode::GetGameMap() const
+ADaisyReefMapManager* ADaisyReefGameMode::GetGameMap() const
 {
 	return SpawnedGameMap;
 }
@@ -26,14 +26,14 @@ void ADaisyReefGameMode::InitGame(const FString& MapName, const FString& Options
 	}
 }
 
-ADaisyReefGameMap* ADaisyReefGameMode::SpawnGameMapCommon(const FVector& SpawnLocation, const FRotator& SpawnRotation,
-                                                          const TSubclassOf<ADaisyReefGameMap> GameMap)
+ADaisyReefMapManager* ADaisyReefGameMode::SpawnGameMapCommon(const FVector& SpawnLocation, const FRotator& SpawnRotation,
+                                                          const TSubclassOf<ADaisyReefMapManager> GameMap)
 {
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.Instigator = GetInstigator();
 	SpawnInfo.ObjectFlags |= RF_Transient; // We never want to save player controllers into a map
 	SpawnInfo.bDeferConstruction = true;
-	ADaisyReefGameMap* NewGameMap = GetWorld()->SpawnActor<ADaisyReefGameMap>(
+	ADaisyReefMapManager* NewGameMap = GetWorld()->SpawnActor<ADaisyReefMapManager>(
 		GameMap, SpawnLocation, SpawnRotation, SpawnInfo);
 
 	if (NewGameMap)

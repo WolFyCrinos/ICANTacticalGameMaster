@@ -49,8 +49,11 @@ struct FTextureByTag
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ForceUnits="units", ClampMin=0))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName Tag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsRandom;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|MapElementsProperties")
 	UTexture2D* TextureMap = nullptr;
@@ -80,6 +83,9 @@ struct FElementList
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
 	FName Tag;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsWalkable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FColor ColorNeededToSpawnCube;

@@ -32,10 +32,6 @@
 		{
 			"Name": "ModularGameplay",
 			"Enabled": true
-		},
-		{
-			"Name": "AStarGridPathFading",
-			"Enabled": true
 		}
 	]
 }
