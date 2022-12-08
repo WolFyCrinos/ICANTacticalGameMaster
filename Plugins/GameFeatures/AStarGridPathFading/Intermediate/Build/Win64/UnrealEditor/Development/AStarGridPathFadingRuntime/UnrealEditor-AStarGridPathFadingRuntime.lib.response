@@ -1,0 +1,12 @@
+/NOLOGO
+/errorReport:prompt
+/MACHINE:x64
+/SUBSYSTEM:WINDOWS
+/DEF
+/NAME:"UnrealEditor-AStarGridPathFadingRuntime.dll"
+/IGNORE:4221
+/NODEFAULTLIB
+"C:\Users\franc\GitHub\ICANTacticalGameMaster\Intermediate\Build\Win64\ICANTacticalGameEditor\Development\Engine\SharedPCH.Engine.ShadowErrors.h.obj"
+"C:\Users\franc\GitHub\ICANTacticalGameMaster\Plugins\GameFeatures\AStarGridPathFading\Intermediate\Build\Win64\UnrealEditor\Development\AStarGridPathFadingRuntime\Module.AStarGridPathFadingRuntime.cpp.obj"
+"C:\Users\franc\GitHub\ICANTacticalGameMaster\Plugins\GameFeatures\AStarGridPathFading\Intermediate\Build\Win64\UnrealEditor\Development\AStarGridPathFadingRuntime\Default.rc2.res"
+/OUT:"C:\Users\franc\GitHub\ICANTacticalGameMaster\Plugins\GameFeatures\AStarGridPathFading\Intermediate\Build\Win64\UnrealEditor\Development\AStarGridPathFadingRuntime\UnrealEditor-AStarGridPathFadingRuntime.lib"
