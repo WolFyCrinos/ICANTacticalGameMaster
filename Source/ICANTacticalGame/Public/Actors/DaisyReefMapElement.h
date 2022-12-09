@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Objects/Maps/DaisyReefMapObject.h"
 #include "DaisyReefMapElement.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)

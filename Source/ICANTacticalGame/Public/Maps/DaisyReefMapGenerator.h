@@ -69,7 +69,7 @@ protected:
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual TArray<ADaisyReefMapElement*> GenerateTileMapElementByTexture(
 		TArray<FColorListByLocation> ColorList, const FMapProperties MapProperties,
-		FElementList ElementList, const FName TargetTag, const FVector Location);
+		FElementList ElementList, const FName TargetTag, const FVector Location, const bool bIsWalkable);
 
 	/**
 	 * @brief 

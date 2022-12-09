@@ -51,7 +51,10 @@ struct FTextureByTag
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName Tag;
-
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bIsWalkable;
+	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bIsRandom;
 
@@ -83,9 +86,6 @@ struct FElementList
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap")
 	FName Tag;
-	
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	bool bIsWalkable;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FColor ColorNeededToSpawnCube;

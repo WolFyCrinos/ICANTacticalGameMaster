@@ -26,7 +26,7 @@ TArray<ADaisyReefMapElement*> ADaisyReefMapGenerator::BeginGenerate()
 	
 	TArray<ADaisyReefMapElement*> NewMapElement = {};
 	
-	for (const auto [TextureTag, bIsRandom, TextureMap] : MapProperty.GetDefaultObject()->MapProperties.TextureMap)
+	for (const auto [TextureTag, bIsWalkable, bIsRandom, TextureMap] : MapProperty.GetDefaultObject()->MapProperties.TextureMap)
 	{
 		if (TextureMap != nullptr)
 		{
@@ -39,7 +39,7 @@ TArray<ADaisyReefMapElement*> ADaisyReefMapGenerator::BeginGenerate()
 					{
 						NewMapElement.Append(GenerateTileMapElementByTexture(
 							GenerateColorMapList(TextureMap), MapProperty.GetDefaultObject()->MapProperties,
-							ElementListByTagAndLocation, Tag, Location));
+							ElementListByTagAndLocation, Tag, Location, bIsWalkable));
 					}
 				}
 			}
@@ -99,7 +99,7 @@ TArray<FColorListByLocation> ADaisyReefMapGenerator::GenerateColorMapList(UTextu
 
 TArray<ADaisyReefMapElement*> ADaisyReefMapGenerator::GenerateTileMapElementByTexture(
 	TArray<FColorListByLocation> ColorList, const FMapProperties MapProperties,
-	FElementList ElementList, const FName TargetTag, const FVector Location)
+	FElementList ElementList, const FName TargetTag, const FVector Location, const bool bIsWalkable)
 {
 	TArray<ADaisyReefMapElement*> NewMapElementsTexture = {};
 
@@ -108,7 +108,7 @@ TArray<ADaisyReefMapElement*> ADaisyReefMapGenerator::GenerateTileMapElementByTe
 	SpawnInfo.ObjectFlags |= RF_Transient; // We never want to save player controllers into a map
 	SpawnInfo.bDeferConstruction = true;
 
-	auto [Tag, bIsWalkable, ColorNeededToSpawnCube, MapElement, TextureLocation, TextureSize] = ElementList;
+	auto [Tag, ColorNeededToSpawnCube, MapElement, TextureLocation, TextureSize] = ElementList;
 	
 	for (auto [Color, ColorLocation] : ColorList)
 	{
@@ -131,7 +131,7 @@ TArray<ADaisyReefMapElement*> ADaisyReefMapGenerator::GenerateTileMapElementByTe
 				                                      FTransform(
 					                                      FRotator::ZeroRotator, NewElementLocation));
 				
-				NewMapElement->InitElement(bIsWalkable, NewElementLocation);
+				NewMapElement->InitElement(bIsWalkable, FVector(NewElementLocation.X / MapProperties.GridOffset.WidthX, NewElementLocation.Y / MapProperties.GridOffset.WidthY, 0));
 				NewMapElementsTexture.Add(NewMapElement);
 			}
 		}
