@@ -2,6 +2,7 @@
 
 #include "Maps/DaisyReefMapManager.h"
 #include "Kismet/GameplayStatics.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Maps/DaisyReefMapGenerator.h"
 
 // Sets default values
@@ -40,32 +41,29 @@ void ADaisyReefMapManager::BeginPlay()
 		//Test
 		if (!FloorMapElementsSpawned.IsEmpty())
 		{
-			FElementByLocation ElementByLocation;
-			ElementByLocation.MapElement = FloorMapElementsSpawned[10];
-			ElementByLocation.Location = FloorMapElementsSpawned[10]->GetElementLocation();
-			TestSurround = SurroundElement(ElementByLocation, FloorMapElementsSpawned);
+			TestSurround = SurroundElement(FloorMapElementsSpawned[10]->GetActorLocation(), FVector(MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthX, MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthY, MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthX));
 		}
 	}
 }
 
-TArray<FElementByLocation> ADaisyReefMapManager::SurroundElement(FElementByLocation StartElement, TArray<ADaisyReefMapElement*> ElementsToCheck)
+TArray<ADaisyReefMapElement*> ADaisyReefMapManager::SurroundElement(const FVector StartLocation, const FVector Radius) const
 {
-	TArray<FElementByLocation> NewElementByLocation = {};
-	FVector MinX = FVector(StartElement.Location.X - 1, StartElement.Location.Y, 0);
-	FVector MaxX = FVector(StartElement.Location.X +1, StartElement.Location.Y, 0);
-	FVector MinY = FVector(StartElement.Location.X, StartElement.Location.Y - 1, 0);
-	FVector MaxY = FVector(StartElement.Location.X, StartElement.Location.Y + 1, 0);
+	TArray<ADaisyReefMapElement*> NewElement = {};
+	TArray<FHitResult> Hits = {};
 
-	for (ADaisyReefMapElement* Element : ElementsToCheck)
+	UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, StartLocation, Radius, FRotator::ZeroRotator, TraceTypeQuery1, false, {}, EDrawDebugTrace::Persistent, Hits, true);
+	
+	for (auto Hit : Hits)
 	{
-		if ((Element->GetElementLocation().Equals(MinX) || Element->GetElementLocation().Equals(MaxX) || Element->GetElementLocation().Equals(MinY) || Element->GetElementLocation().Equals(MaxY)) && FMath::Abs(Element->GetActorLocation().X - StartElement.Location.X) <= 1)
+		ADaisyReefMapElement* SelectedElement = Cast<ADaisyReefMapElement>(Hit.GetActor());
+		if (SelectedElement->IsValidLowLevel())
 		{
-			FElementByLocation SelectedElementByLocation;
-			SelectedElementByLocation.MapElement = Element;
-			SelectedElementByLocation.Location = Element->GetElementLocation();
-			NewElementByLocation.Add(SelectedElementByLocation);
+			if (SelectedElement->GetIsWalkable() && !SelectedElement->GetActorLocation().Equals(StartLocation))
+			{
+				NewElement.AddUnique(Cast<ADaisyReefMapElement>(Hit.GetActor()));
+			}
 		}
 	}
-
-	return  NewElementByLocation;
+	
+	return  NewElement;
 }

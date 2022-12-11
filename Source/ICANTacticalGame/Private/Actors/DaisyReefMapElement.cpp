@@ -37,3 +37,8 @@ FVector ADaisyReefMapElement::GetElementLocation()
 {
 	return Location;
 }
+
+int ADaisyReefMapElement::GetF()
+{
+	return G + H;
+}

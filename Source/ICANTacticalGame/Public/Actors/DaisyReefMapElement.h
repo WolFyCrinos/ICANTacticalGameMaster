@@ -24,16 +24,39 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	/**
+	 * @brief 
+	 * @param bSetIsWalkable 
+	 * @param SetLocation 
+	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual void InitElement(const bool bSetIsWalkable, const FVector SetLocation);
 
+	/**
+	 * @brief 
+	 * @return 
+	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual bool GetIsWalkable();
 
+	/**
+	 * @brief 
+	 * @return 
+	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual FVector GetElementLocation();
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual int GetF();
 
 private:
 	bool bIsWalkable;
 	FVector Location;
+	int G;
+	int H;
+	int F;
 };

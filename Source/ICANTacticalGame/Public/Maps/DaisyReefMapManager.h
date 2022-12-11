@@ -10,19 +10,6 @@
 
 class ADaisyReefMapGenerator;
 
-USTRUCT(BlueprintType)
-struct FElementByLocation
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta=(ShowTreeView))
-	ADaisyReefMapElement* MapElement = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FVector Location = FVector::ZeroVector;
-};
-
 UCLASS(Blueprintable, BlueprintType)
 class ICANTACTICALGAME_API ADaisyReefMapManager : public AActor
 {
@@ -31,6 +18,12 @@ class ICANTACTICALGAME_API ADaisyReefMapManager : public AActor
 public:
 	// Sets default values for this actor's properties
 	ADaisyReefMapManager();
+
+	/**
+	 * @brief
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|TextureMap", meta=(ShowTreeView))
+	TSubclassOf<UDaisyReefMapObject> MapProperty;
 
 	/**
 	* @brief 
@@ -54,15 +47,16 @@ public:
 	 * @brief TEST
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DaisyReef|Map")
-	TArray<FElementByLocation> TestSurround = {};
+	TArray<ADaisyReefMapElement*> TestSurround = {};
 
 	/**
 	 * @brief 
-	 * @param StartElement 
+	 * @param StartLocation
+	 * @param Radius
 	 * @return 
 	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	TArray<FElementByLocation> SurroundElement(FElementByLocation StartElement, TArray<ADaisyReefMapElement*> ElementsToCheck);
+	TArray<ADaisyReefMapElement*> SurroundElement(const FVector StartLocation, const FVector Radius) const;
 
 protected:
 	// Called when the game starts or when spawned

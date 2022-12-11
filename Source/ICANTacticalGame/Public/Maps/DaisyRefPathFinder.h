@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Actors/DaisyReefMapElement.h"
 
 /**
  * 
@@ -13,5 +14,18 @@ public:
 	FDaisyRefPathFinder();
 	~FDaisyRefPathFinder();
 
-	
+protected:
+	/**
+	 * @brief 
+	 */
+	TArray<ADaisyReefMapElement*> SearchableElement;
+
+	/**
+	 * @brief 
+	 * @param Start 
+	 * @param End 
+	 * @param Range 
+	 * @return 
+	 */
+	TArray<ADaisyReefMapElement*> FindPath(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, TArray<ADaisyReefMapElement*> Range);
 };
