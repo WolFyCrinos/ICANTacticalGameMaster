@@ -53,7 +53,36 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual int GetF();
 
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual void SetG(int NewG);
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual void SetH(int NewH);
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual ADaisyReefMapElement* GetPrevious();
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual void SetPrevious(ADaisyReefMapElement* NewPrevious);
+
 private:
+	ADaisyReefMapElement* Previous = nullptr;
 	bool bIsWalkable;
 	FVector Location;
 	int G;

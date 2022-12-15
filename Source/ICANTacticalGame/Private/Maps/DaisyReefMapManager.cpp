@@ -9,7 +9,7 @@
 ADaisyReefMapManager::ADaisyReefMapManager()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
@@ -39,10 +39,10 @@ void ADaisyReefMapManager::BeginPlay()
 		}
 
 		//Test
-		if (!FloorMapElementsSpawned.IsEmpty())
+		/*if (!FloorMapElementsSpawned.IsEmpty())
 		{
 			TestSurround = SurroundElement(FloorMapElementsSpawned[10]->GetActorLocation(), FVector(MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthX, MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthY, MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthX));
-		}
+		}*/
 	}
 }
 

@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Actors/DaisyReefMapElement.h"
 
 // Sets default values
@@ -41,4 +40,24 @@ FVector ADaisyReefMapElement::GetElementLocation()
 int ADaisyReefMapElement::GetF()
 {
 	return G + H;
+}
+
+void ADaisyReefMapElement::SetG(int NewG)
+{
+	G = NewG;
+}
+
+void ADaisyReefMapElement::SetH(int NewH)
+{
+	H = NewH;
+}
+
+ADaisyReefMapElement* ADaisyReefMapElement::GetPrevious()
+{
+	return  Previous;
+}
+
+void ADaisyReefMapElement::SetPrevious(ADaisyReefMapElement* NewPrevious)
+{
+	Previous = NewPrevious;
 }
