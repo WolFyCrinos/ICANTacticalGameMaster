@@ -131,7 +131,7 @@ TArray<ADaisyReefMapElement*> ADaisyReefMapGenerator::GenerateTileMapElementByTe
 				                                      FTransform(
 					                                      FRotator::ZeroRotator, NewElementLocation));
 				
-				NewMapElement->InitElement(bIsWalkable, FVector(NewElementLocation.X / MapProperties.GridOffset.WidthX, NewElementLocation.Y / MapProperties.GridOffset.WidthY, 0));
+				NewMapElement->SetIsWalkable(bIsWalkable);
 				NewMapElementsTexture.Add(NewMapElement);
 			}
 		}

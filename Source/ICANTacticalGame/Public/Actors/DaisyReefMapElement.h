@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Objects/Maps/DaisyReefMapObject.h"
+#include "UObject/UnrealTypePrivate.h"
 #include "DaisyReefMapElement.generated.h"
 
 UCLASS(BlueprintType, Blueprintable)
@@ -26,14 +27,6 @@ public:
 
 	/**
 	 * @brief 
-	 * @param bSetIsWalkable 
-	 * @param SetLocation 
-	 */
-	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual void InitElement(const bool bSetIsWalkable, const FVector SetLocation);
-
-	/**
-	 * @brief 
 	 * @return 
 	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
@@ -44,7 +37,7 @@ public:
 	 * @return 
 	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	virtual FVector GetElementLocation();
+	virtual void SetIsWalkable(bool SetIsWalkable);
 
 	/**
 	 * @brief 
@@ -52,6 +45,20 @@ public:
 	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual int GetF();
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual int GetG();
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual int GetH();
 
 	/**
 	 * @brief 
@@ -76,16 +83,38 @@ public:
 
 	/**
 	 * @brief 
-	 * @return 
+	 * @param NewPrevious 
 	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual void SetPrevious(ADaisyReefMapElement* NewPrevious);
 
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual void FindNeighbour();
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual TArray<ADaisyReefMapElement*> GetNeighbour();
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual void SetMapProperty(TSubclassOf<UDaisyReefMapObject> NewMapProperty);
+
 private:
 	ADaisyReefMapElement* Previous = nullptr;
-	bool bIsWalkable;
-	FVector Location;
-	int G;
-	int H;
-	int F;
+	TSubclassOf<UDaisyReefMapObject> MapProperty;
+	TArray<ADaisyReefMapElement*> Neighbour = {};
+ 	bool bIsWalkable;
+	int G = 0;
+	int H = 0;
+	int F = 0;
 };

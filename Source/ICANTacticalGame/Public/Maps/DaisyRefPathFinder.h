@@ -28,27 +28,13 @@ public:
 protected:
 	/**
 	 * @brief 
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="DaisyReef|PathFinder")
-	TArray<ADaisyReefMapElement*> SearchableElement;
-
-	/**
-	 * @brief 
 	 * @param Start 
 	 * @param End 
 	 * @param Range 
 	 * @return 
 	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	TArray<ADaisyReefMapElement*> FindPath(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, TArray<ADaisyReefMapElement*> Range);
-
-	/**
-	 * @brief 
-	 * @param StartLocation 
-	 * @return 
-	 */
-	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	TArray<ADaisyReefMapElement*> GetNeightbourOverlayTiles(FVector StartLocation, TArray<ADaisyReefMapElement*> InRange);
+	void FindPath(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, int Range);
 
 	/**
 	 * @brief 
@@ -66,5 +52,17 @@ protected:
 	 * @return 
 	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	TArray<ADaisyReefMapElement*> GetFinishedList(ADaisyReefMapElement* Start, ADaisyReefMapElement* End);
+	TArray<ADaisyReefMapElement*> GetFinishedList(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, int Range);
+
+	/**
+	 * @brief 
+	 * @param Start 
+	 * @param End 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	TArray<ADaisyReefMapElement*> GetPath();
+
+private:
+	TArray<ADaisyReefMapElement*> Path = {};
 };

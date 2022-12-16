@@ -28,42 +28,30 @@ void ADaisyReefMapManager::BeginPlay()
 		
 		for (auto Element : MapGenerator->BeginGenerate())
 		{
+			Element->SetMapProperty(MapProperty);
 			if (Element->GetIsWalkable())
 			{
 				FloorMapElementsSpawned.AddUnique(Element);
 			}
 			else
 			{
+				FHitResult Hit;
+
+				UKismetSystemLibrary::LineTraceSingle(GetWorld(), Element->GetActorLocation(), Element->GetActorLocation() + Element->GetActorUpVector() * -1000.0f, TraceTypeQuery1, false, {Cast<AActor>(Element)}, EDrawDebugTrace::Persistent, Hit, true);
+				
+				if(ADaisyReefMapElement* SelectedElement = Cast<ADaisyReefMapElement>(Hit.GetActor()); SelectedElement->IsValidLowLevel())
+				{
+					SelectedElement->SetIsWalkable(false);
+				}
+				
 				WallMapElementsSpawned.AddUnique(Element);
 			}
 		}
 
-		//Test
-		/*if (!FloorMapElementsSpawned.IsEmpty())
+		for (const auto Element : FloorMapElementsSpawned)
 		{
-			TestSurround = SurroundElement(FloorMapElementsSpawned[10]->GetActorLocation(), FVector(MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthX, MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthY, MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthX));
-		}*/
-	}
-}
-
-TArray<ADaisyReefMapElement*> ADaisyReefMapManager::SurroundElement(const FVector StartLocation, const FVector Radius) const
-{
-	TArray<ADaisyReefMapElement*> NewElement = {};
-	TArray<FHitResult> Hits = {};
-
-	UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, StartLocation, Radius, FRotator::ZeroRotator, TraceTypeQuery1, false, {}, EDrawDebugTrace::Persistent, Hits, true);
-	
-	for (auto Hit : Hits)
-	{
-		ADaisyReefMapElement* SelectedElement = Cast<ADaisyReefMapElement>(Hit.GetActor());
-		if (SelectedElement->IsValidLowLevel())
-		{
-			if (SelectedElement->GetIsWalkable() && !SelectedElement->GetActorLocation().Equals(StartLocation))
-			{
-				NewElement.AddUnique(Cast<ADaisyReefMapElement>(Hit.GetActor()));
-			}
+			Element->FindNeighbour();
 		}
 	}
-	
-	return  NewElement;
 }
+

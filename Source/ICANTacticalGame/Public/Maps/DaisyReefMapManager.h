@@ -43,21 +43,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DaisyReef|Map")
 	TArray<ADaisyReefMapElement*> FloorMapElementsSpawned;
 
-	/**
-	 * @brief TEST
-	 */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DaisyReef|Map")
-	TArray<ADaisyReefMapElement*> TestSurround = {};
-
-	/**
-	 * @brief 
-	 * @param StartLocation
-	 * @param Radius
-	 * @return 
-	 */
-	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	TArray<ADaisyReefMapElement*> SurroundElement(const FVector StartLocation, const FVector Radius) const;
-
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

@@ -1,19 +1,16 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Maps/DaisyRefPathFinder.h"
-#include "Algo/RemoveIf.h"
-#include "Kismet/KismetSystemLibrary.h"
 
 DEFINE_LOG_CATEGORY(LogPathFinder);
 
 UDaisyRefPathFinder::UDaisyRefPathFinder()
 {
 	PrimaryComponentTick.bCanEverTick = true;
-	SearchableElement.Empty();
 }
 
-TArray<ADaisyReefMapElement*> UDaisyRefPathFinder::FindPath(ADaisyReefMapElement* Start,
-	ADaisyReefMapElement* End, TArray<ADaisyReefMapElement*> Range)
+void UDaisyRefPathFinder::FindPath(ADaisyReefMapElement* Start,
+	ADaisyReefMapElement* End, int Range)
 {
 	UE_LOG(LogPathFinder, Display, TEXT("Start: %s, End: %s"), *Start->GetName(), *End->GetName());
 	
@@ -22,69 +19,56 @@ TArray<ADaisyReefMapElement*> UDaisyRefPathFinder::FindPath(ADaisyReefMapElement
 
 	OpenList.AddUnique(Start);
 
-	while (!OpenList.IsEmpty())
+	while (OpenList.Num() > 0)
 	{
-		Algo::Sort(OpenList, [](ADaisyReefMapElement* A, ADaisyReefMapElement* B)
+		ADaisyReefMapElement* FirstMapElement = OpenList[0];
+		
+		for (int i = 1; i < OpenList.Num(); i++)
 		{
-			return A->GetF() < B->GetF();
-		});
+			if (OpenList[i]->GetF() < FirstMapElement->GetF() || OpenList[i]->GetF() == FirstMapElement->GetF())
+			{
+				if (OpenList[i]->GetH() < FirstMapElement->GetH())
+				{
+					UE_LOG(LogPathFinder, Display, TEXT("%s, with F: %d"), *OpenList[i]->GetName(), OpenList[i]->GetF());
 
-		ADaisyReefMapElement* CurrentList = OpenList[0];
-
-		OpenList.Remove(CurrentList);
-		ClosedList.Add(CurrentList);
-
-		if (CurrentList == End)
-		{
-			UE_LOG(LogPathFinder, Display, TEXT("Finish"));
-			
-			return GetFinishedList(Start, End);
+					FirstMapElement = OpenList[i];
+				}
+			}
 		}
 
-		for (auto Element : GetNeightbourOverlayTiles(CurrentList->GetActorLocation(), Range))
+		OpenList.Remove(FirstMapElement);
+		ClosedList.Add(FirstMapElement);
+
+		if (FirstMapElement == End)
 		{
-			if (ClosedList.Contains(Element) || FMath::Abs(CurrentList->GetActorLocation().X - Element->GetActorLocation().X) > 1)
+			Path = GetFinishedList(Start, End, Range);
+			return;
+		}
+
+		for (auto Neighbour : FirstMapElement->GetNeighbour())
+		{
+			if (ClosedList.Contains(Neighbour))
 			{
 				continue;
 			}
-
-			Element->SetG(GetManhattenDistance(Start, Element));
-			Element->SetH(GetManhattenDistance(End, Element));
-
-			UE_LOG(LogPathFinder, Display, TEXT("%s, with F: %d"), *Element->GetName(), Element->GetF());
-
-			Element->SetPrevious(CurrentList);
-
-			if (!OpenList.Contains(Element))
+			
+			int NewCostToNeighbour = Neighbour->GetG() + GetManhattenDistance(FirstMapElement, Neighbour);
+			
+			if (NewCostToNeighbour < Neighbour->GetG() || !OpenList.Contains(Neighbour))
 			{
-				OpenList.Add(Element);
+				Neighbour->SetG(NewCostToNeighbour);
+				Neighbour->SetH(GetManhattenDistance(Neighbour, End));
+				Neighbour->SetPrevious(FirstMapElement);
+
+				UE_LOG(LogPathFinder, Display, TEXT("%s, with G: %d & H: %d"), *Neighbour->GetName(), Neighbour->GetG(), Neighbour->GetH());
+				
+				if (!OpenList.Contains(Neighbour))
+				{
+					OpenList.Add(Neighbour);
+				}
 			}
 		}
 	}
-	
-	return {};
-}
-
-TArray<ADaisyReefMapElement*> UDaisyRefPathFinder::GetNeightbourOverlayTiles(FVector StartLocation, TArray<ADaisyReefMapElement*> InRange)
-{
-	TArray<ADaisyReefMapElement*> NewElement = {};
-	TArray<FHitResult> Hits = {};
-
-	UKismetSystemLibrary::BoxTraceMulti(GetWorld(), StartLocation, StartLocation, FVector(MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthX, MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthY, MapProperty.GetDefaultObject()->MapProperties.GridOffset.WidthX), FRotator::ZeroRotator, TraceTypeQuery1, false, {}, EDrawDebugTrace::Persistent, Hits, true);
-	
-	for (auto Hit : Hits)
-	{
-		ADaisyReefMapElement* SelectedElement = Cast<ADaisyReefMapElement>(Hit.GetActor());
-		if (SelectedElement->IsValidLowLevel())
-		{
-			if (SelectedElement->GetIsWalkable() && !SelectedElement->GetActorLocation().Equals(StartLocation) && InRange.Contains(SelectedElement))
-			{
-				NewElement.AddUnique(Cast<ADaisyReefMapElement>(Hit.GetActor()));
-			}
-		}
-	}
-	
-	return  NewElement;
 }
 
 int UDaisyRefPathFinder::GetManhattenDistance(ADaisyReefMapElement* Start, ADaisyReefMapElement* End)
@@ -92,18 +76,29 @@ int UDaisyRefPathFinder::GetManhattenDistance(ADaisyReefMapElement* Start, ADais
 	return FMath::Abs(Start->GetActorLocation().X - End->GetActorLocation().X) + FMath::Abs(Start->GetActorLocation().Y - End->GetActorLocation().Y);
 }
 
-TArray<ADaisyReefMapElement*> UDaisyRefPathFinder::GetFinishedList(ADaisyReefMapElement* Start, ADaisyReefMapElement* End)
+TArray<ADaisyReefMapElement*> UDaisyRefPathFinder::GetFinishedList(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, int Range)
 {
 	TArray<ADaisyReefMapElement*> FinishedList = {};
+	TArray<ADaisyReefMapElement*> FirstList = {};
 	ADaisyReefMapElement* CurrentEnd = End;
 
 	while (CurrentEnd != Start)
 	{
-		FinishedList.Add(CurrentEnd);
+		FirstList.Add(CurrentEnd);
 		CurrentEnd = CurrentEnd->GetPrevious();
 	}
 
-	Algo::Reverse(FinishedList);
+	Algo::Reverse(FirstList);
 
+	for (int i = 0; i < (Range > FirstList.Num() ? FirstList.Num() : Range); i++)
+	{
+		FinishedList.AddUnique(FirstList[i]);
+	}
+	
 	return FinishedList;
+}
+
+TArray<ADaisyReefMapElement*> UDaisyRefPathFinder::GetPath()
+{
+	return Path;
 }
