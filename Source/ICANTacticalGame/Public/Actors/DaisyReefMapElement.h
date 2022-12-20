@@ -109,10 +109,32 @@ public:
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
 	virtual void SetMapProperty(TSubclassOf<UDaisyReefMapObject> NewMapProperty);
 
+	/**
+	 * @brief 
+	 * @param NewPawn 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual void SetCurrentPawn(APawn* NewPawn);
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual APawn* GetCurrentPawn();
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="DaisyReef")
+	virtual bool HasAnyPawn();
+	
 private:
 	ADaisyReefMapElement* Previous = nullptr;
 	TSubclassOf<UDaisyReefMapObject> MapProperty;
 	TArray<ADaisyReefMapElement*> Neighbour = {};
+	APawn* CurrentPlayer;
  	bool bIsWalkable;
 	int G = 0;
 	int H = 0;

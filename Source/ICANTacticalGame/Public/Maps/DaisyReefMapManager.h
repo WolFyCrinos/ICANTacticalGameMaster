@@ -10,6 +10,8 @@
 
 class ADaisyReefMapGenerator;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FMapGenerated);
+
 UCLASS(Blueprintable, BlueprintType)
 class ICANTACTICALGAME_API ADaisyReefMapManager : public AActor
 {
@@ -54,6 +56,12 @@ public:
 	 */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DaisyReef|Map")
 	TArray<ADaisyReefMapElement*> PawnSpawnerMapElementsSpawned;
+
+	/**
+	 * @brief 
+	 */
+	UPROPERTY(BlueprintAssignable, BlueprintCallable)
+	FMapGenerated OnMapGenerated;
 
 	/**
 	 * @brief 

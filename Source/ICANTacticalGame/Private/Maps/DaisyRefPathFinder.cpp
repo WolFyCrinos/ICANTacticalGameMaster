@@ -10,7 +10,7 @@ UDaisyRefPathFinder::UDaisyRefPathFinder()
 }
 
 void UDaisyRefPathFinder::FindPath(ADaisyReefMapElement* Start,
-	ADaisyReefMapElement* End, int Range)
+	ADaisyReefMapElement* End, const int Range)
 {
 	UE_LOG(LogPathFinder, Display, TEXT("Start: %s, End: %s"), *Start->GetName(), *End->GetName());
 	
@@ -51,10 +51,8 @@ void UDaisyRefPathFinder::FindPath(ADaisyReefMapElement* Start,
 			{
 				continue;
 			}
-			
-			int NewCostToNeighbour = Neighbour->GetG() + GetManhattenDistance(FirstMapElement, Neighbour);
-			
-			if (NewCostToNeighbour < Neighbour->GetG() || !OpenList.Contains(Neighbour))
+
+			if (const int NewCostToNeighbour = Neighbour->GetG() + GetManhattenDistance(FirstMapElement, Neighbour); NewCostToNeighbour < Neighbour->GetG() || !OpenList.Contains(Neighbour))
 			{
 				Neighbour->SetG(NewCostToNeighbour);
 				Neighbour->SetH(GetManhattenDistance(Neighbour, End));
@@ -76,7 +74,7 @@ int UDaisyRefPathFinder::GetManhattenDistance(ADaisyReefMapElement* Start, ADais
 	return FMath::Abs(Start->GetActorLocation().X - End->GetActorLocation().X) + FMath::Abs(Start->GetActorLocation().Y - End->GetActorLocation().Y);
 }
 
-TArray<ADaisyReefMapElement*> UDaisyRefPathFinder::GetFinishedList(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, int Range)
+TArray<ADaisyReefMapElement*> UDaisyRefPathFinder::GetFinishedList(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, const int Range) const
 {
 	TArray<ADaisyReefMapElement*> FinishedList = {};
 	TArray<ADaisyReefMapElement*> FirstList = {};

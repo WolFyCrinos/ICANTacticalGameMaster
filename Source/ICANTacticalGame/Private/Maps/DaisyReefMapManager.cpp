@@ -9,7 +9,7 @@
 ADaisyReefMapManager::ADaisyReefMapManager()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = false;
 }
 
 TArray<ADaisyReefMapElement*> ADaisyReefMapManager::GetWalkableFloor()
@@ -25,6 +25,8 @@ TArray<ADaisyReefMapElement*> ADaisyReefMapManager::GetPawnSpawnerFloor()
 // Called when the game starts or when spawned
 void ADaisyReefMapManager::BeginPlay()
 {
+	Super::BeginPlay();
+	
 	FActorSpawnParameters SpawnInfo;
 	SpawnInfo.Instigator = GetInstigator();
 	SpawnInfo.ObjectFlags |= RF_Transient; // We never want to save player controllers into a map
@@ -66,6 +68,11 @@ void ADaisyReefMapManager::BeginPlay()
 		for (const auto Element : FloorMapElementsSpawned)
 		{
 			Element->FindNeighbour();
+		}
+
+		if (OnMapGenerated.IsBound())
+		{
+			OnMapGenerated.Broadcast();
 		}
 	}
 }

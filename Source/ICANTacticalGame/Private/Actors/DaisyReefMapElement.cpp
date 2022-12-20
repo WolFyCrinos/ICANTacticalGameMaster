@@ -105,3 +105,18 @@ void ADaisyReefMapElement::SetMapProperty(TSubclassOf<UDaisyReefMapObject> NewMa
 {
 	MapProperty = NewMapProperty;
 }
+
+void ADaisyReefMapElement::SetCurrentPawn(APawn* NewPawn)
+{
+	CurrentPlayer = NewPawn;
+}
+
+APawn* ADaisyReefMapElement::GetCurrentPawn()
+{
+	return CurrentPlayer;
+}
+
+bool ADaisyReefMapElement::HasAnyPawn()
+{
+	return CurrentPlayer != nullptr && CurrentPlayer->IsValidLowLevel();
+}

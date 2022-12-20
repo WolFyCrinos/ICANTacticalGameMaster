@@ -52,7 +52,7 @@ protected:
 	 * @return 
 	 */
 	UFUNCTION(BlueprintCallable, Category="DaisyReef")
-	TArray<ADaisyReefMapElement*> GetFinishedList(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, int Range);
+	TArray<ADaisyReefMapElement*> GetFinishedList(ADaisyReefMapElement* Start, ADaisyReefMapElement* End, int Range) const;
 
 	/**
 	 * @brief 
