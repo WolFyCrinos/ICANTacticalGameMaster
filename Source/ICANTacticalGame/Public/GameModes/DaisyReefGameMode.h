@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "DaisyReefTeam.h"
 #include "GameFramework/GameModeBase.h"
 #include "DaisyReefGameMode.generated.h"
 
@@ -20,6 +21,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes, meta=(ShowTreeView))
 	TSubclassOf<ADaisyReefMapManager> GameMapClass = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Classes, meta=(ShowTreeView))
+	TSubclassOf<ADaisyReefTeam> GameTeamsClass = nullptr;
+
 	UFUNCTION(BlueprintCallable, Category="DaisyReef|GameMapClass")
 	ADaisyReefMapManager* GetGameMap() const;
 
@@ -29,6 +33,16 @@ protected:
 	virtual ADaisyReefMapManager* SpawnGameMapCommon(const FVector& SpawnLocation, const FRotator& SpawnRotation,
 	                                              TSubclassOf<ADaisyReefMapManager> GameMap);
 
+	virtual ADaisyReefTeam* SpawnGameTeamsCommon(const FVector& SpawnLocation, const FRotator& SpawnRotation,
+												  TSubclassOf<ADaisyReefTeam> GameTeam);
+
+	UFUNCTION(BlueprintCallable)
+	virtual ADaisyReefMapManager* GetMapManager();
+
+	UFUNCTION(BlueprintCallable)
+	virtual ADaisyReefTeam* GetGameTeams();
+
 private:
 	ADaisyReefMapManager* SpawnedGameMap = nullptr;
+	ADaisyReefTeam* SpawnedGameTeams = nullptr;
 };

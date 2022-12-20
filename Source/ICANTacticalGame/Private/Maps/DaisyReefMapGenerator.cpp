@@ -1,9 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 #include "Maps/DaisyReefMapGenerator.h"
-
-#include <string>
-
 #include "Actors/DaisyReefMapElement.h"
 #include "Kismet/GameplayStatics.h"
 #include "Objects/Maps/DaisyReefMapObject.h"
@@ -130,7 +127,8 @@ TArray<ADaisyReefMapElement*> ADaisyReefMapGenerator::GenerateTileMapElementByTe
 				UGameplayStatics::FinishSpawningActor(NewMapElement,
 				                                      FTransform(
 					                                      FRotator::ZeroRotator, NewElementLocation));
-				
+
+				NewMapElement->Tags.Add(FName(Tag));
 				NewMapElement->SetIsWalkable(bIsWalkable);
 				NewMapElementsTexture.Add(NewMapElement);
 			}

@@ -12,6 +12,16 @@ ADaisyReefMapManager::ADaisyReefMapManager()
 	PrimaryActorTick.bCanEverTick = true;
 }
 
+TArray<ADaisyReefMapElement*> ADaisyReefMapManager::GetWalkableFloor()
+{
+	return FloorMapElementsSpawned;
+}
+
+TArray<ADaisyReefMapElement*> ADaisyReefMapManager::GetPawnSpawnerFloor()
+{
+	return PawnSpawnerMapElementsSpawned;
+}
+
 // Called when the game starts or when spawned
 void ADaisyReefMapManager::BeginPlay()
 {
@@ -45,6 +55,11 @@ void ADaisyReefMapManager::BeginPlay()
 				}
 				
 				WallMapElementsSpawned.AddUnique(Element);
+			}
+
+			if (Element->ActorHasTag(PawnSpawnerTag))
+			{
+				PawnSpawnerMapElementsSpawned.Add(Element);
 			}
 		}
 

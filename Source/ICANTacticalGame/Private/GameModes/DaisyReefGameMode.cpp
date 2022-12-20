@@ -22,7 +22,12 @@ void ADaisyReefGameMode::InitGame(const FString& MapName, const FString& Options
 
 	if (GameMapClass)
 	{
-		ADaisyReefGameMode::SpawnGameMapCommon({0, 0, 0}, {0, 0, 0}, GameMapClass);
+		SpawnedGameMap = ADaisyReefGameMode::SpawnGameMapCommon(FVector::ZeroVector, FRotator::ZeroRotator, GameMapClass);
+	}
+
+	if (GameTeamsClass)
+	{
+		SpawnedGameTeams = ADaisyReefGameMode::SpawnGameTeamsCommon(FVector::ZeroVector, FRotator::ZeroRotator, GameTeamsClass);
 	}
 }
 
@@ -42,4 +47,33 @@ ADaisyReefMapManager* ADaisyReefGameMode::SpawnGameMapCommon(const FVector& Spaw
 	}
 
 	return NewGameMap;
+}
+
+
+ADaisyReefTeam* ADaisyReefGameMode::SpawnGameTeamsCommon(const FVector& SpawnLocation, const FRotator& SpawnRotation,
+														  const TSubclassOf<ADaisyReefTeam> GameTeam)
+{
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Instigator = GetInstigator();
+	SpawnInfo.ObjectFlags |= RF_Transient; // We never want to save player controllers into a map
+	SpawnInfo.bDeferConstruction = true;
+	ADaisyReefTeam* NewGameMap = GetWorld()->SpawnActor<ADaisyReefTeam>(
+		GameTeam, SpawnLocation, SpawnRotation, SpawnInfo);
+
+	if (NewGameMap)
+	{
+		UGameplayStatics::FinishSpawningActor(NewGameMap, FTransform(SpawnRotation, SpawnLocation));
+	}
+
+	return NewGameMap;
+}
+
+ADaisyReefMapManager* ADaisyReefGameMode::GetMapManager()
+{
+	return SpawnedGameMap;
+}
+
+ADaisyReefTeam* ADaisyReefGameMode::GetGameTeams()
+{
+	return SpawnedGameTeams;
 }

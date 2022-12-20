@@ -43,6 +43,32 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DaisyReef|Map")
 	TArray<ADaisyReefMapElement*> FloorMapElementsSpawned;
 
+	/**
+	 * @brief 
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DaisyReef|Map")
+	FName PawnSpawnerTag = "";
+
+	/**
+	 * @brief 
+	 */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="DaisyReef|Map")
+	TArray<ADaisyReefMapElement*> PawnSpawnerMapElementsSpawned;
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable)
+	TArray<ADaisyReefMapElement*> GetWalkableFloor();
+
+	/**
+	 * @brief 
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable)
+	TArray<ADaisyReefMapElement*> GetPawnSpawnerFloor();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
