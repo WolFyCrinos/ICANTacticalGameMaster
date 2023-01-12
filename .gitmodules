@@ -1,6 +1,0 @@
-[submodule "Plugins/GridCore"]
-	path = Plugins/GridCore
-	url = https://github.com/SpaceKiwi-Studio/GridCore
-[submodule "Plugins/TexMapCore"]
-	path = Plugins/TexMapCore
-	url = https://github.com/SpaceKiwi-Studio/TexMapCore
