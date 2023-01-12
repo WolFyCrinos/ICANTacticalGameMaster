@@ -17,6 +17,18 @@
 			"TargetAllowList": [
 				"Editor"
 			]
+		},
+		{
+			"Name": "GridCore",
+			"Enabled": true
+		},
+		{
+			"Name": "TexMapCore",
+			"Enabled": true
 		}
+	],
+	"TargetPlatforms": [
+		"Windows",
+		"HoloLens"
 	]
 }
